@@ -1,0 +1,32 @@
+# menunjukkan versi 3 Docker Compose yang digunakan.
+version: '3'
+
+# mendefinisikan layanan (service) atau container yang akan dijalankan.
+services:
+  # layanan untuk aplikasi item-app.
+  item-app:
+    # menggunakan image dari GitHub Container Registry dengan tag 'v1'.
+    image: ghcr.io/arinurhuda22/item-app:v1
+    # mengarahkan port 80 di host ke port 8080 di dalam container.
+    ports:
+      - '80:8080'
+    # menunjukkan bahwa layanan ini bergantung pada layanan 'item-db'.
+    depends_on:
+      - item-db
+    # menunjukkan bahwa layanan ini akan selalu dijalankan ulang jika berhenti.
+    restart: always
+
+  # layanan untuk database MongoDB.
+  item-db:
+    # menggunakan image dari Docker Hub dengan tag '3'.
+    image: mongo:3
+    # mendefinisikan volume Docker yang disebut 'app-db'. Volumenya digunakan oleh layanan 'item-db' untuk menyimpan data database MongoDB di dalam container.
+    volumes:
+      - app-db:/data/db
+    # menunjukkan bahwa layanan ini akan selalu dijalankan ulang jika berhenti.
+    restart: always
+
+#  bagian ini mendefinisikan volume Docker.
+volumes:
+# Nama volume yang digunakan oleh layanan item-db untuk menyimpan data database MongoDB di dalam container.
+  app-db:
