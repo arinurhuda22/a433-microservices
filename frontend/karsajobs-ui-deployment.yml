@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+# jenis objek Kubernetes yang dibuat
+kind: Deployment
+metadata:
+  name: karsajobs-ui-deployment
+#spesifikasi untuk Deployment
+spec:
+  #menunjukkan jumlah replika dari pod yang akan dijalankan oleh Deployment
+  replicas: 1
+  #untuk memilih pod yang akan di-manage oleh Deployment.
+  selector: 
+    matchLabels: #menentukan label yang harus cocok untuk pod yang akan di-manage
+      app: karsajobs-ui
+  #template pod yang akan di-deploy oleh Deployment
+  template:
+    metadata: #metadata untuk pod
+      labels: #label untuk pod
+        app: karsajobs-ui
+    #spesifikasi untuk pod
+    spec:
+      #menentukan container yang akan dijalankan dalam pod
+      containers:
+        - name: karsajobs-ui 
+          image: ghcr.io/arinurhuda22/karsajobs-ui:latest  #nama dan tag Docker image
+          ports: #port yang akan di-expose oleh container
+            - containerPort: 8080
