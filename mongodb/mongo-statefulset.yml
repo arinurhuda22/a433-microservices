@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mongo-statefulset
+  labels:
+    app: mongodb
+spec:
+  replicas: 1
+  serviceName: mongo-service
+  selector:
+    matchLabels:
+      app: mongodb
+      tier: backend
+  template:
+    metadata:
+      labels:
+        app: mongodb
+        tier: backend
+    spec:
+      containers:
+        - name: mongo-statefulset-container
+          image: mongo:latest
+          ports:
+            - containerPort: 27017
+              name: mongodb
+          env:
+            - name: MONGO_INITDB_ROOT_USERNAME_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_USERNAME 
+            - name: MONGO_INITDB_ROOT_PASSWORD_FILE
+              value: /etc/mongo-credentials/MONGO_ROOT_PASSWORD 
+          volumeMounts:
+            - name: mongo-persistent-storage
+              mountPath: /data/db
+            - name: mongo-config
+              mountPath: /config
+            - name: mongo-secret
+              mountPath: /etc/mongo-credentials
+      volumes:
+        - name: mongo-config
+          configMap:
+            name: mongo-config
+        - name: mongo-secret
+          secret:
+            secretName: mongo-secret
+        - name: mongo-persistent-storage
+          persistentVolumeClaim:
+            claimName: mongo-persistent-volume-claim
