@@ -1,0 +1,37 @@
+version: 2.1
+
+jobs:
+  lint-dockerfile:
+    docker:
+      #Menggunakan Docker image 'cimg/base:stable'
+      - image: cimg/base:stable
+    #langkah-langkah
+    steps:
+      - checkout 
+      - run: #menjalankan perintah untuk menginstal Hadolint dan menjalankannya terhadap 'Dockerfile'
+          name: Install and Run Hadolint
+          command: |
+            sudo apt-get update
+            sudo apt-get -y install hadolint
+            hadolint Dockerfile
+
+  build-app-karsajobs-ui:
+    docker:
+      - image: cimg/base:stable #menggunakan Docker image 'cimg/base:stable'
+    steps:
+      - checkout
+      - run: #menjalankan perintah untuk login ke Docker Hub (GitHub Container Registry) menggunakan username dan password.
+          name: Login to Docker Hub
+          command: docker login --username arinurhuda22 --password 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 ghcr.io 
+      - run: #menjalankan perintah untuk build Docker image dengan tag 'ghcr.io/arinurhuda22/karsajobs:latest' dan push Docker image ke GitHub Container Registry
+          name: Build and Push Docker Image
+          command: |
+            docker build -t ghcr.io/arinurhuda22/karsajobs:latest .
+            docker push ghcr.io/arinurhuda22/karsajobs:latest
+
+workflows: #mendefinisikan sebuah alur kerja (workflow) bernama 'karsajobs-ui-ci'
+  version: 2
+  karsajobs-ui-ci:
+    jobs: #perrjaan lint Dockerfile dan build push ke docker image
+      - lint-dockerfile 
+      - build-app-karsajobs-ui
