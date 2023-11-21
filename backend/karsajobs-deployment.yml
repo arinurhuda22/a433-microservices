@@ -1,0 +1,53 @@
+apiVersion: apps/v1 #versi API Kubernetes yang digunakan untuk objek ini
+#jenis objek Kubernetes yang dibuat 
+kind: Deployment
+#berisi metadata untuk objek
+metadata:
+  name: karsajobs-deployment
+#spesifikasi untuk Deployment
+spec:
+  #jumlah replika dari pod yang akan dijalankan oleh Deployment
+  replicas: 1
+  #digunakan untuk memilih pod yang akan di-manage oleh Deployment
+  selector:
+    #menentukan label yang harus cocok untuk pod yang akan di-manage
+    matchLabels:
+      app: karsajobs
+  #template pod yang akan di-deploy oleh Deployment
+  template:
+    #metadata untuk pod
+    metadata:
+      #menetapkan label untuk pod
+      labels: 
+        app: karsajobs
+    #spesifikasi untuk pod
+    spec: 
+      #menentukan container yang akan dijalankan dalam pod
+      containers:
+        #nama container
+        - name: karsajobs-backend
+          #nama dan tag Docker image yang akan digunakan untuk container
+          image: ghcr.io/arinurhuda22/karsajobs:latest
+          #menetapkan port yang akan di-expose oleh container
+          ports:
+            - containerPort: 8080
+          #variabel lingkungan untuk container
+          env: 
+            #menetapkan nilai '8080' untuk variabel 'APP_PORT'
+            - name: APP_PORT 
+              value: '8080'
+            #menetapkan nilai 'mongo-service' untuk variabel 'MONGO_HOST'
+            - name: MONGO_HOST
+              value: 'mongo-service'
+            #mengambil nilai dari secret dengan nama 'mongo-secret' dan kunci 'MONGO_ROOT_USERNAME'
+            - name: MONGO_USER 
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_ROOT_USERNAME
+            #mengambil nilai dari secret dengan nama 'mongo-secret' dan kunci 'MONGO_ROOT_PASSWORD'
+            - name: MONGO_PASS 
+              valueFrom:
+                secretKeyRef:
+                  name: mongo-secret
+                  key: MONGO_ROOT_PASSWORD
