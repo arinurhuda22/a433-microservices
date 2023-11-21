@@ -1,0 +1,48 @@
+version: 2.1 #menunjukkan versi dari konfigurasi CircleCI yang digunakan
+
+jobs: #tempat di mana pekerjaan atau tugas untuk CI/CD didefinisikan
+  lint-dockerfile:
+    docker: #menyatakan bahwa pekerjaan ini akan dijalankan dalam lingkungan Docker
+      - image: cimg/base:stable #Docker image yang akan digunakan
+    steps: #langkah-langkah yang dijalankan dalam pekerjaan ini
+      - checkout #mengambil kode sumber dari repositori
+      - run: #menjalankan perintah-perintah dibawah ini
+          name: Install and Run Hadolint
+          command: | # update, install hadolint dan menjalankannya
+            sudo apt-get update 
+            sudo apt-get -y install hadolint
+            hadolint Dockerfile 
+
+  test-app:
+    docker:
+      - image: golang:1.17 #Docker image resmi Golang versi 1.17.
+    steps:
+      - checkout #mengambil kode sumber
+      #menjalankan aplikasi GO
+      - run:
+          name: Set up Go and Run Unit Tests 
+          command: go test -v -short --count=1 $(go list ./...) 
+
+  build-app-karsajobs:
+    docker:
+      #menggunakan Docker image 'cimg/base:stable'
+      - image: cimg/base:stable
+    steps:
+      - checkout
+      - run:
+          name: Login to Docker Hub #melakukan login ke Docker Hub
+          command: docker login --username arinurhuda22 --password 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 ghcr.io 
+          name: Build and Push Docker Image
+          command: |
+            docker build -t ghcr.io/arinurhuda22/karsajobs:latest . 
+            docker push ghcr.io/arinurhuda22/karsajobs:latest 
+workflows: #menyediakan definisi workflow
+  version: 2 #menunjukkan versi workflow
+  karsajobs-ci: #nama workflow
+    jobs: #pekerjaan-pekerjaan yang akan dijalankan dalam workflow ini
+    #urutan pekerjaan yang dijalankan: 'lint-dockerfile', 'test-app', dan 'build-app-karsajobs'. 'build-app-karsajobs' memerlukan bahwa 'test-app' telah berhasil dijalankan sebelumnya ('requires: - test-app').
+      - lint-dockerfile
+      - test-app
+      - build-app-karsajobs:
+          requires:
+            - test-app
