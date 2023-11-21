@@ -23,4 +23,4 @@ spec:
         - name: karsajobs-ui 
           image: ghcr.io/arinurhuda22/karsajobs-ui:latest  #nama dan tag Docker image
           ports: #port yang akan di-expose oleh container
-            - containerPort: 8080
+            - containerPort: 8000
