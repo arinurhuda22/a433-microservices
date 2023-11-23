@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipping-deployment  #nama Deployment
+  labels:
+    app: shipping  #ablel untuk aplikasi
+    version: v1  #label untuk versi
+spec:
+  selector:
+    matchLabels:
+      app: shipping  #pemilih pod berdasarkan label
+  template:
+    metadata:
+      labels:
+        app: shipping  #label untuk pod yang akan dibuat oleh template ini
+    spec:
+      containers:
+        - name: shipping-container  #nama container
+          image: ghcr.io/arinurhuda22/shipping-service:latest  #image yang dipakai container
+          ports:
+            - containerPort: 3001  #port yang di-Expose oleh container
