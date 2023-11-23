@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: order-deployment  #nama Deployment
+  labels:
+    app: order  #label aplikasi
+    version: v1  #label versi
+spec:
+  selector:
+    matchLabels:
+      app: order  #pemilihan pod berdasarkan label aplikasi
+  template:
+    metadata:
+      labels:
+        app: order  #label pada pod yang akan dibuat
+    spec:
+      containers:
+        - name: order-container  #nama container
+          image: ghcr.io/arinurhuda22/order-service:latest  #image yang dipakai container
+          ports:
+            - containerPort: 3000  #port yang akan di-Expose di dalam container
