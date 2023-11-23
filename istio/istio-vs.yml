@@ -1,0 +1,24 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: istio-vs
+spec:
+  hosts:
+  - "*"  #menentukan host yang akan di-matching oleh VirtualService. "*" berarti match semua host.
+  gateways:
+  - istio-gateway  #menentukan gateway yang akan digunakan oleh VirtualService.
+  http:
+  - match:
+      - uri:
+          exact: /order  #mengatur aturan pencocokan untuk URI yang tepat "/order".
+      - uri:
+          exact: /shipping  #mengatur aturan pencocokan untuk URI yang tepat "/shipping".
+    route:
+      - destination:
+          host: order-service  #menentukan destinasi layanan untuk rute pertama.
+          port:
+            number: 3000  #menentukan nomor port untuk destinasi layanan.
+      - destination:
+          host: shipping-service  #menentukan destinasi layanan untuk rute kedua.
+          port:
+            number: 3001  #menentukan nomor port untuk destinasi layanan.
